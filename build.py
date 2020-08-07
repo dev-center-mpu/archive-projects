@@ -23,9 +23,9 @@ if arch != 'x86' and arch != 'x64':
 # Installs dependencies
 if not path.isdir('./node_modules'):
     call('npm i', shell=True)
-if not path.isdir('./../portfolio'):
+if not path.isdir('./../portfolio/node_modules'):
     call('npm i', shell=True, cwd='../portfolio')
-if not path.isdir('./../truck-forge'):
+if not path.isdir('./../truck-forge/node_modules'):
     call('npm i', shell=True, cwd='../truck-forge')
 
 # Builds clients
