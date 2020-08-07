@@ -8,11 +8,9 @@ from distutils.dir_util import copy_tree
 parser = ArgumentParser(description='Build options.')
 parser.add_argument('-o', '--os', default='win')
 parser.add_argument('-a', '--arch', default='x64')
-parser.add_argument('-i', '--npm_install', default='false')
 args = vars(parser.parse_args())
 os = args['os']
 arch = args['arch']
-npm_install = args['npm_install']
 
 # Checks arguments
 if os != 'win' and os != 'macos' and os != 'linux':
@@ -22,10 +20,12 @@ if arch != 'x86' and arch != 'x64':
     print('Supported architectures are: x86, x64')
     quit()
 
-# Install dependencies
-if npm_install == 'true':
+# Installs dependencies
+if not path.isdir('./node_modules'):
     call('npm i', shell=True)
+if not path.isdir('./../portfolio'):
     call('npm i', shell=True, cwd='../portfolio')
+if not path.isdir('./../truck-forge'):
     call('npm i', shell=True, cwd='../truck-forge')
 
 # Builds clients
@@ -36,22 +36,11 @@ call('npm run build --prod', shell=True, cwd='../truck-forge')
 if path.isdir('./public'):
     rmtree('./public')
 
-# Creates folders to store web sites
+# Copies built clients to server
 call('mkdir public', shell=True)
-call('mkdir portfolio', shell=True, cwd='public')
-call('mkdir truck-forge', shell=True, cwd='public')
-
-# Copies built client to server (portfolio)
-for item in listdir('./../portfolio/build'):
-    old_path = './../portfolio/build/{}'.format(item)
-    new_path = './public/portfolio/{}'.format(item)
-    if path.isfile(old_path) or path.islink(old_path):
-        copyfile(old_path, new_path)
-    elif path.isdir(old_path):
-        copy_tree(old_path, new_path)
-
-# Copies built client to server (truck-forge)
+copy_tree('./../portfolio/build', './public/portfolio')
 copy_tree('./../truck-forge/dist/truck-forge', './public/truck-forge')
+copy_tree('./../ietm-forge-old/public', './public/ietm-forge-old')
 
 # Compiles server
 command = 'pkg . --targets=node12-{}-{}'.format(os, arch)
