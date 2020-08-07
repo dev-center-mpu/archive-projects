@@ -41,15 +41,18 @@ call('mkdir public', shell=True)
 copy_tree('./../portfolio/build', './public/portfolio')
 copy_tree('./../truck-forge/dist/truck-forge', './public/truck-forge')
 copy_tree('./../ietm-forge-old/public', './public/ietm-forge-old')
+copy_tree('./../mpu-cloud-old/public', './public/mpu-cloud-old')
+copy_tree('./../mpu-cloud-old/storage', './public/mpu-cloud-old/storage')
 
 # Compiles server
 command = 'pkg . --targets=node12-{}-{}'.format(os, arch)
 call(command, shell=True)
 
-# Copies exec and config to /build folder
+# Creates and fills /build folder
 if path.isdir('./build'):
     rmtree('./build')
 call('mkdir build', shell=True)
+copyfile('./../mpu-cloud-old/data.db', './build/mpu-cloud-old-data.db') # important mpu-cloud-old file
 copyfile('./config.json', './build/config.json')
 if os == 'win':
     copyfile('./archive-projects.exe', './build/portfolio.exe')
